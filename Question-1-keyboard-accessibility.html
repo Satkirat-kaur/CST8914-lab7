@@ -31,6 +31,7 @@ h2 {
   margin-top: 0;
 }
 
+
 article h3 {
   margin-top: 0;
   font-size: 1.5em;
@@ -73,7 +74,17 @@ header {
   font-size: 18px;
   margin-right: 18px;
 }
+/* Added keyboard focus styles */
+a:focus, button:focus, input:focus {
+            outline: 2px solid blue;
+            box-shadow: 0 0 5px blue;
+        }
 
+        /* Ensured tabindex for accessibility */
+        .menu a {
+            outline: 2px solid transparent;
+            transition: outline 0.2s;
+        }
 .menu a:last-child {
   margin-right: 0;
 }
@@ -201,27 +212,18 @@ article p {
 
     <div class="container">
       <h1 class="logo">The Funion</h1>
-      
       <!-- Maybe this could be improved with aria-activedescendant later? -->
       <nav class="menu">
         <a href="#">Home</a>
         <a href="#">Politics</a>
-        <a href="#" tabindex="-1">Business</a>
+        <a href="#">Business</a> <!-- Removed unnecessary tabindex as anchor elements are focusable by default. -->
         <a href="#">Entertainment</a>
         <a href="#">Sports</a>
         <a href="#" class="btn-search pull-right"><img src="https://raw.githubusercontent.com/udacity/ud891/2de2a0688c68809a3b453db3a24b1a59e8401459/lesson2-focus/02-dom-order/images/search.svg" alt="Search" />Search</a> 
-
       </nav>
     </div>
   </header>
-  <div class="newsletter">
-    <div class="container">
-      <h3>Like the Funion? Consider joining our newsletter!</h3>
-      <input type="text">
-      <button type="button" onfocus="getFocus()">Sign up</button></div>
-      
-    </div>
-  </div>
+ 
   <main class="container">
     <h2 class="offscreen">Top story</h2>
     <article class="main-story">
@@ -239,11 +241,11 @@ article p {
     <div class="side-by-side">
       <div class="column">
         <div class="tier-header">
-          <h2 tabindex="0">In the news</h2>
+          <h2>In the news</h2> <!-- Removed tabindex="0" as headings should not be focusable when tabbing -->
         </div>
         <article>
           <h3 class="headline">Bee wonders if maybe everyone else is a drone and he's the only one who has it "figured out."</h3>
-          <p><a href="#" tabindex="1"><b>Read More</b></a></p>
+          <p><a href="#" tabindex="0"><b>Read More</b></a></p> <!-- Removed tabindex="1" to ensure natural tab order, tabindex="0" allows natural focus -->
           <img src="https://github.com/udacity/ud891/blob/gh-pages/lesson2-focus/02-dom-order/images/bee.jpg?raw=true" alt="A bee on top of a flower" />
         </article>
       </div>
@@ -254,7 +256,8 @@ article p {
             <h3 class="headline">Telephone booths. How is this still a thing?</h3>
             <p>
               LONDON-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-              irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. <a href="#">Read More</a>
+              irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 
+              <a href="#">Read More</a>
             </p>
           </div>
         </article>
@@ -268,23 +271,32 @@ article p {
         <article>
           <img src="https://github.com/udacity/ud891/blob/gh-pages/lesson2-focus/02-dom-order/images/dog.jpg?raw=true" alt="A dog at a desk looks up at a laptop and mouse" />
           <div class="info">
-            <h3 class="headline">Turn man's best friend into man's best personal assistant. <a href="#">Read More</a></h3>
+            <h3 class="headline">Turn man's best friend into man's best personal assistant.</h3>
+            <p><a href="#">Read More</a></p> <!-- Moved 'Read More' outside the heading for better semantic structure and tab navigation -->
           </div>
         </article>
         <article>
           <img src="https://github.com/udacity/ud891/blob/gh-pages/lesson2-focus/02-dom-order/images/coffee.jpg?raw=true" alt="A cup of coffee on a table" />
           <div class="info">
-            <h3 class="headline">San Franciscans are losing their minds over this third wave, artisanal, fair trade, handcrafted, locavore coffee. <a href="#">Read More</a></h3>
-        </article>
+            <h3 class="headline">San Franciscans are losing their minds over this third wave, artisanal, fair trade, handcrafted, locavore coffee.</h3>
+            <p><a href="#">Read More</a></p> <!-- Moved 'Read More' outside the heading for better semantic structure and tab navigation -->
+          </article>
         <article>
           <img src="https://github.com/udacity/ud891/blob/gh-pages/lesson2-focus/02-dom-order/images/football.jpg?raw=true" alt="A football player hands the ball off to another player" />
           <div class="info">
-            <h3 class="headline">Sportsball team scores a touchpoint to win the big race. <a href="#">Read More</a></h3>
+            <h3 class="headline">Sportsball team scores a touchpoint to win the big race.</h3>
+            <p><a href="#">Read More</a></p> <!-- Moved 'Read More' outside the heading for better semantic structure and tab navigation -->
           </div>
         </article>
       </div>
     </div>
-    
+    <div class="newsletter">
+      <div class="container">
+        <h3>Like the Funion? Consider joining our newsletter!</h3>
+        <input type="text" aria-label="Enter your email for newsletter subscription"> <!-- Added aria-label to improve accessibility for screen reader users -->
+        <button type="button" onclick="getFocus()">Sign up</button> <!-- Changed onfocus to onclick to ensure the function runs only when clicked, not when tabbing through. -->
+      </div>
+    </div>
   </main>
   <!--   stuff can be added here :)
   <footer>
