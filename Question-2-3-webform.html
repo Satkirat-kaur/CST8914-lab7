@@ -3,134 +3,120 @@
     <head>
         <title>Form validation with messages on top: Code example - Accessibility Developer Guide example</title>
         <meta charset="utf-8">
-        <style>.control, fieldset {
-      margin: 6px 0;
-    }
-    
-    label {
-      display: inline-block;
-      width: 120px;
-      vertical-align: top;
-    }
-    
-    input + label {
-      width: auto;
-    }
-    
-    .error, .required {
-      color: red;
-    }
-    
-    fieldset ul {
-      margin: 0;
-    }</style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <style>
+            /* Styling for form controls and fieldsets */
+            .control, fieldset {
+                margin: 6px 0;
+            }
+            label {
+                display: inline-block;
+                width: 120px;
+                vertical-align: top;
+            }
+            input + label {
+                width: auto;
+            }
+            .error, .required {
+                color: red;
+            }
+            fieldset ul {
+                margin: 0;
+            }
+        </style>
     </head>
     <body>
         <h1>Feedback form</h1>
-    <form>
-        <div class="control">
-          <label>Full name <span class="required">*</span></label><input id="name" name="name" type="text" />
-        </div>
-        <div class="control">
-          <label>Biography</label><textarea id="biography" name="biography" type="text"></textarea>
-          <span>Include examples on your skills in JavaScript.</span>
-        </div>
+        <form id="feedbackForm">
+            <div class="control">
+                <label for="name">Full name <span class="required">*</span>:</label>
+                <input id="name" name="name" type="text" required aria-required="true" aria-labelledby="name-label">
+                <span id="name-label" class="sr-only">Please enter your full name.</span>
+            </div>
+            <div class="control">
+                <label for="biography">Biography <span class="required">*</span>:</label>
+                <textarea id="biography" name="biography" required aria-required="true" placeholder="Include examples of your skills in JavaScript." aria-labelledby="biography-label"></textarea>
+                <span id="biography-label" class="sr-only">Provide a short description about yourself.</span>
+            </div>
+            <fieldset>
+                <legend>Gender <span class="required">*</span></legend>
+                <div class="control">
+                    <input id="gender_male" name="gender" type="radio" value="male" required aria-required="true" aria-describedby="gender-help">
+                    <label for="gender_male">Male</label>
+                </div>
+                <div class="control">
+                    <input id="gender_female" name="gender" type="radio" value="female" required aria-required="true" aria-describedby="gender-help">
+                    <label for="gender_female">Female</label>
+                </div>
+            </fieldset>
+            <div class="control">
+                <input id="accept_agbs" name="accept_agbs" type="checkbox" value="1" required aria-required="true" aria-describedby="termsHelp">
+                <label for="accept_agbs">I accept the terms and conditions</label>
+                <span id="termsHelp" class="sr-only">You must accept the terms before submitting the form.</span>
+            </div>
+            <div class="control">
+                <input type="submit" value="Register">
+            </div>
+        </form>
         
-          <div>Gender</div>
-          <div class="control">
-            <input id="gender_male" name="gender" type="radio" value="male" /><label>Male</label>
-          </div>
-          <div class="control">
-            <input id="gender_female" name="gender" type="radio" value="female" /><label>Female</label>
-          </div>
-        
-        <div class="control">
-          <input id="accept_agbs" name="accept_agbs" type="checkbox" value="1" /><label>I accept the terms and conditions</label>
+        <div id="errorMessage" role="alert" tabindex="-1" style="display: none; color: red;">
+            Please fill in all required fields correctly.
         </div>
-        <div class="control">
-          <input name="validate" type="hidden" value="1" /><input type="submit" value="Register" />
+
+        <div id="successMessage" role="alert" tabindex="-1" style="display: none; color: green;">
+            Registration successful!
         </div>
-      </form>
-      
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-          <script>"use strict";
-      
-      ;
-      (function () {
-        var validateInput;
-      
-        $.urlParam = function (name) {
-          var results;
-          results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.href);
-      
-          if (results === null) {
-            return null;
-          } else {
-            return decodeURI(results[1]) || null;
-          }
-        };
-      
-        validateInput = function validateInput(input, message) {
-          var $elementToDescribe, $error, $errorContainer, $fieldset, $input, $referencedElement, value;
-          $input = $('[name="' + input + '"]');
-      
-          if ((value = $.urlParam(input)) === null) {
-            if ($('fieldset.errors').length === 0) {
-              $('form').prepend('<fieldset class="errors"><legend>Errors</legend><ul></ul></fieldset>');
-            }
-      
-            $referencedElement = null;
-            $elementToDescribe = null;
-            $errorContainer = $('fieldset.errors ul');
-      
-            if ($input.is(':radio')) {
-              $fieldset = $input.closest('fieldset');
-              $elementToDescribe = $fieldset;
-              $referencedElement = $input.filter(':first');
-            } else {
-              $elementToDescribe = $input;
-              $referencedElement = $input;
-            }
-      // R.G. hint: fix next line ;)
-            $error = $('<a>' + message + '</a>');
-            $error.click(function (e) {
-              // If we rely on the link's href pointing to the input's ID, it doesn't trigger forms mode in screen readers
-              $referencedElement.focus();
-              return e.preventDefault();
-            });
-            $elementToDescribe.attr('aria-describedby', input + '_description');
-            $errorContainer.append('<li>').find('li:last').append($error);
-      
-            if ($(':not(form):focus').length === 0) {
-              // See https://stackoverflow.com/questions/46134247/jquery-setting-focus-doesnt-work-in-ie11/
-            
-            }
-          } else {
-            if ($input.is(':checkbox')) {
-              $input.attr('checked', true);
-            }
-      
-            if ($input.is(':radio')) {
-              return $input.filter('[value="' + value + '"]').attr('checked', true);
-            } else {
-              return $input.val(value);
-            }
-          }
-        };
-      
-        $(document).ready(function () {
-          if ($.urlParam('validate')) {
-            validateInput('name', 'Please enter your name!');
-            validateInput('biography', 'Please tell us something about your history!');
-            validateInput('gender', 'Please tell us your gender!');
-            validateInput('accept_agbs', 'You must accept our terms and conditions!');
-      
-            if ($('.error').length === 0) {
-              return alert('All inputs are valid.');
-            }
-          }
-        });
-      }).call(void 0);</script>
+
+        <script>
+            "use strict";
+            (function () {
+                var validateInput;
                 
-        </body>
-      </html>
+                $.urlParam = function (name) {
+                    var results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.href);
+                    return results ? decodeURI(results[1]) || null : null;
+                };
+                
+                validateInput = function validateInput(input, message) {
+                    var $input = $('[name="' + input + '"]');
+                    if (!$input.val() || ($input.is(':radio') && !$('input[name="' + input + '"]:checked').val())) {
+                        if ($('fieldset.errors').length === 0) {
+                            $('form').prepend('<fieldset class="errors"><legend>Errors</legend><ul></ul></fieldset>');
+                        } // Check if the error container exists before adding errors
+                        var $errorContainer = $('fieldset.errors ul');
+                        var $error = $('<li><a href="#' + input + '">' + message + '</a></li>');
+                        $error.find('a').click(function (e) {
+                            $('#' + input).focus();
+                            e.preventDefault();
+                        }); // Ensure clicking the error moves focus to the correct field
+                        $errorContainer.append($error);
+                        return true;
+                    }
+                    return false;
+                };
+                // Form submission handler to validate inputs
+                $(document).ready(function () {
+                    $('#feedbackForm').submit(function (event) {
+                        event.preventDefault();
+                        $('.errors').remove();
+                        var hasError = false;
+                        
+                        hasError = validateInput('name', 'Please enter your full name!') || hasError;
+                        hasError = validateInput('biography', 'Please provide some details about your history!') || hasError;
+                        hasError = validateInput('gender', 'Please select your gender!') || hasError;
+                        hasError = validateInput('accept_agbs', 'You must accept our terms and conditions!') || hasError;
+                        
+                        if (hasError) {
+                            $("#errorMessage").show().focus();
+                            $("#successMessage").hide();
+                        } else {
+                            $("#errorMessage").hide();
+                            $("#successMessage").show().focus();
+                            alert("All inputs are valid."); // Alert user upon successful validation
+                        }
+                    });
+                });
+            }).call(void 0);
+        </script>
+    </body>
+</html>
